@@ -24,7 +24,7 @@ export class ProdutoService implements IBaseService<Produto> {
             });
     }
     update(entity: Produto): Promise<Produto> {
-        const response = axios.put(`${environment.apiUrl}/produtos/${entity.id}`, entity);
+        const response = axios.put(`${environment.apiUrl}/produtos`, entity);
         return response.then(res => res.data)
             .catch(error => {
                 throw new Error(error);
@@ -36,5 +36,5 @@ export class ProdutoService implements IBaseService<Produto> {
             .catch(error => {
                 throw new Error(error);
             });
-    }
+    }   
 }
