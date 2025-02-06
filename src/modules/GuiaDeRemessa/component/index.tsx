@@ -39,6 +39,7 @@ const GuiaDeRemessaPage: React.FC = () => {
 
     var guiaDeRemessa = new GuiaDeRemessa();
     guiaDeRemessa.unidadeEscolar = user?.nomeDaEscola;
+    guiaDeRemessa.idUsuario = user?.id;
     
     guiaDeRemessa.Itens = guiaDeRemessaItens;
 
@@ -49,7 +50,8 @@ const GuiaDeRemessaPage: React.FC = () => {
       .then(() => {
         console.log("Sucesso");
         toast.success("Pedido enviado com sucesso!");
-        navigate("/");
+        navigate("/pedidos");
+        values.itens = [];
       })
       .catch((error) => {
         console.log(error);

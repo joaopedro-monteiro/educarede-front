@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Login } from "../commands/login-command";
 import { environment } from "../../../environments/environment";
+import { toast } from "react-toastify";
 
 const instance = axios.create({
   baseURL: environment.apiUrl,
@@ -19,6 +20,18 @@ export class LoginService {
         console.log(error);
         throw new Error(error);
       });
+    return response;
+  }
+
+  async logout(): Promise<any> {
+    const response = await instance.post(`/logout`)
+    .then((res) => {
+      toast.success("Logout efetuado com sucesso!");
+    })
+    .catch((error) => {
+      console.log(error);
+      toast.error("Erro ao efetuar logout!");
+    });
     return response;
   }
 }

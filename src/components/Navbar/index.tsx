@@ -4,13 +4,13 @@ import {
   PieChartOutlined,
   ProductFilled,
   ShopFilled,
-  LogoutOutlined
+  UserAddOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Breadcrumb, Button, Layout, Menu, Tag, theme, Tooltip } from "antd";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../infrastructure/context/auth";
-import { UserService } from "../../modules/Login/services/user-service";
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -35,38 +35,41 @@ function getItem(
   } as MenuItem;
 }
 
-const items: MenuItem[] = [
-  getItem(
-    <Link to="/guia-de-remessa">Guia de Remessa</Link>,
-    "1",
-    <PieChartOutlined />
-  ),
-  getItem(<Link to="/produtos">Produtos</Link>, "2", <ProductFilled />),
-  getItem(<Link to="/fornecedores">Fornecedores</Link>, "3", <ShopFilled />),
-  getItem(
-    <Link to="/unidades-de-envio">Unidades de Envio</Link>,
-    "4",
-    <DesktopOutlined />
-  ),
-  getItem(<Link to="/pedidos">Pedidos</Link>, "5", <DesktopOutlined />),
-  // getItem('User', 'sub1', <UserOutlined />, [
-  //   getItem('Tom', '3'),
-  //   getItem('Bill', '4'),
-  //   getItem('Alex', '5'),
-  // ]),
-];
-
 const Navbar: React.FC<NavbarProps> = ({ children, tituloDaPagina }) => {
+  const { user, logout } = useContext(AuthContext);
+
+  const items: MenuItem[] = [
+
+    getItem(
+      <Link to="/guia-de-remessa">Guia de Remessa</Link>,
+      "1",
+      <PieChartOutlined />
+    ),    
+    getItem(<Link to="/pedidos">Pedidos</Link>, "2", <DesktopOutlined />),
+  ];
+
+  if(user.role === "Gestor") {
+    items.push(getItem(<Link to="/produtos">Produtos</Link>, "3", <ProductFilled />));
+    items.push(getItem(<Link to="/fornecedores">Fornecedores</Link>, "4", <ShopFilled />));
+    items.push(getItem(<Link to="/unidades-de-envio">Unidades de Envio</Link>, "5", <DesktopOutlined />));   
+    items.push(getItem(<Link to="/usuarios">Usuários</Link>, "6", <UserOutlined />));    
+  }
+
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const { user } = useContext(AuthContext);
 
   async function deslogarHandle() {
-    const userService = new UserService();
-    userService.logout();
+    logout();
+  }
+
+  function mostrarUser() {
+    console.log(JSON.stringify(user));
+    console.log("nome da escola: ", user?.nomeDaEscola);
+    console.log("email: ", user?.email);
+    console.log("role: ", user?.role);
   }
 
   return (
@@ -98,8 +101,17 @@ const Navbar: React.FC<NavbarProps> = ({ children, tituloDaPagina }) => {
               <Breadcrumb.Item>{user?.nomeDaEscola}</Breadcrumb.Item>
               <Breadcrumb.Item>{tituloDaPagina}</Breadcrumb.Item>
             </Breadcrumb>
-
-            <p>Você está logado como: <Tag color="blue">{user?.nomeDaEscola}</Tag>| <Button onClick={deslogarHandle} type="link" style={{textDecoration: "underline"}}>Sair</Button></p>
+            <p>
+              Você está logado como:{" "}
+              <Tag color="blue">{user?.nomeDaEscola}</Tag>|{" "}
+              <Button
+                onClick={deslogarHandle}
+                type="link"
+                style={{ textDecoration: "underline" }}
+              >
+                Sair
+              </Button>
+            </p>
           </div>
 
           <div

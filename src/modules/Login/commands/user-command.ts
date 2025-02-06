@@ -1,5 +1,6 @@
 export class User {
-    public Email?: string;
-    public NomeDaEscola?: string;
-    public Role?: string;
+    public id?: string;
+    public email?: string;
+    public nomeDaEscola?: string;
+    public role?: string;
 }

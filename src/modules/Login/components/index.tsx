@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Form, Input, Button, Card, Typography, Row, Image } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { LoginService } from "../services/login-service";
@@ -6,6 +6,7 @@ import { Login } from "../commands/login-command";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { UserService } from "../services/user-service";
+import { AuthContext } from "../../../infrastructure/context/auth";
 
 const { Title } = Typography;
 
@@ -13,33 +14,16 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  
+  const { login } = useContext(AuthContext);
 
-  const onFinish = async (values: any) => {
-    const loginService = new LoginService();
-    const userService = new UserService();
+  const onFinish = async (values: any) => {    
+    const loginForm = new Login();
+    loginForm.email = email;
+    loginForm.password = password;
 
-    try {
-      const login = new Login();
-      login.email = email;
-      login.password = password;
-
-      const response = await loginService.login(login);
-      console.log(response);
-      toast.success("Login efetuado com sucesso!");
-      
-      
-
-      userService.user()
-      .then((res) => {
-        console.log(res);
-        navigate("/produtos");
-      });
-
-    } catch (error) {
-      console.log(error);
-      toast.error("Erro ao efetuar login!");
-    }
+    login(loginForm);
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -58,10 +42,17 @@ const LoginPage: React.FC = () => {
       }}
     >
       <Card
-        style={{ maxWidth: "400px", width: "100%", minHeight: "500px" }}
+        style={{ maxWidth: "400px", width: "100%", minHeight: "400px" }}
         bordered
       >
-        <Title level={3} style={{ textAlign: "center" }}>
+        <Row style={{ height: "50px" }} align={"middle"}>
+          <Image
+            preview={false}
+            src="https://firebasestorage.googleapis.com/v0/b/tickets-7246a.appspot.com/o/imagens%2FLOGO%20PREFEITURA%20MUNICIPAL%20DE%20BOM%20DESPACHO.png?alt=media&token=16daff62-b30e-4814-bd41-0fe94f7df49d"
+          />
+        </Row>
+        
+        <Title level={3} style={{ textAlign: "center" }}>          
           Login
         </Title>
         <Form
@@ -89,7 +80,9 @@ const LoginPage: React.FC = () => {
           <Form.Item
             label="Senha"
             name="password"
-            rules={[{ required: true, message: "Por favor, insira sua senha!" }]}
+            rules={[
+              { required: true, message: "Por favor, insira sua senha!" },
+            ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
@@ -104,12 +97,6 @@ const LoginPage: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
-        <Row style={{ height: "150px" }} align={"middle"}>
-          <Image
-            preview={false}
-            src="https://firebasestorage.googleapis.com/v0/b/tickets-7246a.appspot.com/o/imagens%2FLOGO%20PREFEITURA%20MUNICIPAL%20DE%20BOM%20DESPACHO.png?alt=media&token=16daff62-b30e-4814-bd41-0fe94f7df49d"
-          />
-        </Row>
       </Card>
     </div>
   );

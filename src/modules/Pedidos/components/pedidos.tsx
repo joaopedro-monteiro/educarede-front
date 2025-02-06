@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Col, Input, Row, Table, Tag, Tooltip } from "antd";
 import { Button, TableColumnsType, TableProps } from "antd";
 import { GuiaDeRemessa } from "../../GuiaDeRemessa/entity/guia-de-remessa";
 import { GuiaDeRemessaService } from "../../GuiaDeRemessa/service/guia-de-remessa-service";
 import moment from "moment";
+import 'moment/locale/pt-br';
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
-import { downloadPdf } from '../utils/download-guia-de-remessa-pdf-util';
+import { downloadPdf } from "../utils/download-guia-de-remessa-pdf-util";
 import { usePedidos } from "../hooks/use-pedidos";
+import { AuthContext } from "../../../infrastructure/context/auth";
 
 interface DataType {
   key?: string;
@@ -20,6 +22,7 @@ const PedidosPage: React.FC = () => {
   const navigate = useNavigate();
   const { pedidos } = usePedidos();
   const [pedidosSerched, setPedidosSerched] = useState<string>("");
+  const { user } = useContext(AuthContext);
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -49,7 +52,7 @@ const PedidosPage: React.FC = () => {
       sorter: (a, b) =>
         moment(a.dataDaEmissao).unix() - moment(b.dataDaEmissao).unix(),
       render: (dataDaEmissao) =>
-        moment(dataDaEmissao).format("DD/MM/YYYY hh:mm"),
+        moment(dataDaEmissao).format("DD/MM/YYYY HH:mm"),
     },
     {
       title: "Data de Entrega",
@@ -74,16 +77,20 @@ const PedidosPage: React.FC = () => {
                 <SearchOutlined />
               </Button>
             </Tooltip>
-            <Tooltip title="Baixar Guia de Remessa">
-              <Button
-                type="primary"
-                onClick={() =>
-                  downloadPdf(record.key!, record as GuiaDeRemessa)
-                }
-              >
-                <DownloadOutlined />
-              </Button>
-            </Tooltip>
+            {
+              user.role === "Gestor" ? (
+                <Tooltip title="Baixar Guia de Remessa">
+                  <Button
+                    type="primary"
+                    onClick={() =>
+                      downloadPdf(record.key!, record as GuiaDeRemessa)
+                    }
+                  >
+                    <DownloadOutlined />
+                  </Button>
+                </Tooltip>
+              ) : null
+            }
           </div>
         ) : null,
     },

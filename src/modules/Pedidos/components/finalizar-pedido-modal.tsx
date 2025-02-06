@@ -189,6 +189,7 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
         >
           <label>Data da entrega:</label>
           <DatePicker
+            format="DD/MM/YYYY HH:mm"
             placeholder="Data da entrega"
             onChange={(date) => setDataDaEntrega(date ? date.toDate() : null)}
           />

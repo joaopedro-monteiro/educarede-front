@@ -8,7 +8,7 @@ const instance = axios.create({
 });
 
 export class UserService {
-  async user(): Promise<User | null> {
+  async user(): Promise<User> {
     const response = await instance
       .get(`api/user`)
       .then((res) => {

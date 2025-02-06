@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Table } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import { useParams } from "react-router-dom";
 import { DownloadOutlined } from "@ant-design/icons";
 import moment from "moment";
+import 'moment/locale/pt-br';
 import FinalizarPedidoModal from "./finalizar-pedido-modal";
 import { useGerenciarPedidos } from "../hooks/use-gerenciar-pedidos";
 import { downloadPdf } from "../utils/download-guia-de-remessa-pdf-util";
+import { AuthContext } from "../../../infrastructure/context/auth";
 
 interface DataType {
   key?: React.Key;
@@ -16,9 +18,13 @@ interface DataType {
 
 const GerenciarPedidosPage: React.FC = () => {
   const { guiaDeRemessaId } = useParams<{ guiaDeRemessaId: string }>();
-  const { pedidos, guiaDeRemessa, guiaDeRemessaFirebase, fetchDataGuiaDeRemessaFirebase } = useGerenciarPedidos(
-    guiaDeRemessaId!
-  );
+  const {
+    pedidos,
+    guiaDeRemessa,
+    guiaDeRemessaFirebase,
+    fetchDataGuiaDeRemessaFirebase,
+  } = useGerenciarPedidos(guiaDeRemessaId!);
+  const { user } = useContext(AuthContext);
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -52,36 +58,38 @@ const GerenciarPedidosPage: React.FC = () => {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h3>Detalhes do Pedido</h3>
-        <div>
-          {guiaDeRemessaFirebase !== null ? (
-            <p>
-              Guia de Remessa com assinatura enviada para o sistema em:{" "}
-              {moment(guiaDeRemessaFirebase.dataUpload).format(
-                "DD/MM/YYYY hh:mm"
-              )}
-              {" | "}
-              <a href={guiaDeRemessaFirebase.url} target="_blank">
-                Clique aqui
-              </a>{" "}
-              para visualizar
-            </p>
-          ) : (
-            <>
-              <Button
-                type="primary"
-                onClick={() => downloadPdf(guiaDeRemessaId!, guiaDeRemessa!)}
-                icon={<DownloadOutlined />}
-              >
-                <strong>Guia de Remessa</strong>
-              </Button>
-              <FinalizarPedidoModal
-                id={guiaDeRemessaId}
-                unidadeEscolar={guiaDeRemessa?.unidadeEscolar}
-                onSaved={fetchDataGuiaDeRemessaFirebase}
-              />
-            </>
-          )}
-        </div>
+        {user.role === "Gestor" ? (
+          <div>
+            {guiaDeRemessaFirebase !== null ? (
+              <p>
+                Guia de Remessa com assinatura enviada para o sistema em:{" "}
+                {moment(guiaDeRemessaFirebase.dataUpload).format(
+                  "DD/MM/YYYY HH:mm"
+                )}
+                {" | "}
+                <a href={guiaDeRemessaFirebase.url} target="_blank">
+                  Clique aqui
+                </a>{" "}
+                para visualizar
+              </p>
+            ) : (
+              <>
+                <Button
+                  type="primary"
+                  onClick={() => downloadPdf(guiaDeRemessaId!, guiaDeRemessa!)}
+                  icon={<DownloadOutlined />}
+                >
+                  <strong>Guia de Remessa</strong>
+                </Button>
+                <FinalizarPedidoModal
+                  id={guiaDeRemessaId}
+                  unidadeEscolar={guiaDeRemessa?.unidadeEscolar}
+                  onSaved={fetchDataGuiaDeRemessaFirebase}
+                />
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
       <div>
         <Table<DataType>

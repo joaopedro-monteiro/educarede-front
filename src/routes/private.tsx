@@ -9,6 +9,7 @@ interface PrivateProps {
 const Private = ({children}: PrivateProps) => {
     const { signed } = useContext(AuthContext);
 
+    console.log("SIGNED DENTRO DO PRIVATE: ",signed);
     if(!signed) {
         return <Navigate to="/"/>
     }
