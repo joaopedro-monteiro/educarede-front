@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserService } from "../../modules/Login/services/user-service";
 import { User } from "../../modules/Login/commands/user-command";
@@ -12,65 +12,59 @@ interface AuthContextProps {
 
 interface AuthContextType {
   signed: boolean;
-  user: User;
-  login: (login:Login) => Promise<void>;
+  user: User | null;
+  loading: boolean;
+  login: (login: Login) => Promise<void>;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType>(
-  {} as AuthContextType
-);
+export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: AuthContextProps) => {
-  const [user, setUser] = useState<User>({} as User);
-  const [signed, setSigned] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
+  const loginService = useMemo(() => new LoginService(), []);
+  const userService = useMemo(() => new UserService(), []);
 
-  async function login(login: Login) {
-    const loginService = new LoginService();
-    const userService = new UserService();
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await userService.user();
+        setUser(userData);
+      } catch (error) {
+        console.error("Erro ao carregar usuário:", error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const response = await loginService
-      .login(login)
-      .then(() => {
-        toast.success("Login efetuado com sucesso!");
-        setSigned(true);
-        userService.user().then((res) => {
-          console.log(res);
-          setUser(res);
-          setSigned(true);
-        });
-        navigate("/guia-de-remessa");
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error("Erro ao efetuar login!");
-        setSigned(false);
-      });
-  }
+    loadUser();
+  }, [userService]);
 
-  function limparCookie() {
-    const cookies = document.cookie.split("; ");
-    console.log("Cookies: " + cookies);
-    cookies.forEach((cookie) => {
-      const cookieName = cookie.split("=")[0];
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    });
-    console.log("Signed: " + signed + "|" + " User: " + user);
+  async function login(loginData: Login) {
+    try {
+      await loginService.login(loginData);
+      const userData = await userService.user();
+      setUser(userData);
+      toast.success("Login efetuado com sucesso!");
+      navigate("/guia-de-remessa");
+    } catch (error) {
+      console.error("Erro ao efetuar login:", error);
+      toast.error("Erro ao efetuar login!");
+    }
   }
 
   function logout() {
-    const loginService = new LoginService();
-
-    setSigned(false);
-    setUser({});
+    setUser(null);
     loginService.logout();
-    limparCookie();
+    navigate("/login");
   }
 
   return (
-    <AuthContext.Provider value={{ signed, user, login, logout }}>
+    <AuthContext.Provider value={{ signed: !!user, user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

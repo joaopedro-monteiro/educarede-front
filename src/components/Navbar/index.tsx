@@ -48,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ children, tituloDaPagina }) => {
     getItem(<Link to="/pedidos">Pedidos</Link>, "2", <DesktopOutlined />),
   ];
 
-  if(user.role === "Gestor") {
+  if(user?.role === "Gestor") {
     items.push(getItem(<Link to="/produtos">Produtos</Link>, "3", <ProductFilled />));
     items.push(getItem(<Link to="/fornecedores">Fornecedores</Link>, "4", <ShopFilled />));
     items.push(getItem(<Link to="/unidades-de-envio">Unidades de Envio</Link>, "5", <DesktopOutlined />));   

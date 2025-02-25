@@ -69,68 +69,72 @@ const NovoProdutoPage: React.FC = () => {
 
   return (
     <Form form={form} onFinish={onFinish}>
-      <Row gutter={40}>
-        <Col span={8}>
-          <Form.Item label="Nome" name="nome">
-            <Input
-              placeholder="Nome"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="Fornecedor" name="fornecedor">
-            <Select
-              placeholder="Fornecedor"
-              onDropdownVisibleChange={handleLoadFornecedores}
-              value={fornecedorId}
-              onSelect={setFornecedorId}
-            >
-              {fornecedoresLoad.map((fornecedor) => (
-                <Select.Option key={fornecedor.id} value={fornecedor.id}>
-                  {fornecedor.nome}
-                </Select.Option>
-              ))}
-            </Select>
-            <br />
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <NovoFornecedorModal typeButton="dashed" />
-            </div>
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="Unidade de Envio" name="unidadeDeEnvio">
-            <Select
-              placeholder="Unidade de Envio"
-              onDropdownVisibleChange={handleLoadUnidadesDeMedida}
-              value={unidadeDeEnvioId}
-              onSelect={setUnidadeDeEnvioId}
-            >
-              {unidadesDeEnvioLoad.map((unidadeDeEnvio) => (
-                <Select.Option
-                  key={unidadeDeEnvio.id}
-                  value={unidadeDeEnvio.id}
-                >
-                  {unidadeDeEnvio.unidadeDeEnvio}
-                </Select.Option>
-              ))}
-            </Select>
-            <br />
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <NovaUnidadeDeEnvioModal typeButton="dashed" />
-            </div>
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24} style={{ textAlign: "right" }}>
-          <Button type="primary" htmlType="submit">
-            Criar
-          </Button>
-        </Col>
-      </Row>
-    </Form>
+    <Row gutter={[16, 16]}> {/* Reduzi o gutter para dispositivos menores */}
+      {/* Nome */}
+      <Col xs={24} sm={12} md={8}> {/* Ajusta o span para diferentes tamanhos de tela */}
+        <Form.Item label="Nome" name="nome">
+          <Input
+            placeholder="Nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
+        </Form.Item>
+      </Col>
+
+      {/* Fornecedor */}
+      <Col xs={24} sm={12} md={8}>
+        <Form.Item label="Fornecedor" name="fornecedor">
+          <Select
+            placeholder="Fornecedor"
+            onDropdownVisibleChange={handleLoadFornecedores}
+            value={fornecedorId}
+            onSelect={setFornecedorId}
+          >
+            {fornecedoresLoad.map((fornecedor) => (
+              <Select.Option key={fornecedor.id} value={fornecedor.id}>
+                {fornecedor.nome}
+              </Select.Option>
+            ))}
+          </Select>
+          <br />
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
+            <NovoFornecedorModal typeButton="dashed" />
+          </div>
+        </Form.Item>
+      </Col>
+
+      {/* Unidade de Envio */}
+      <Col xs={24} sm={12} md={8}>
+        <Form.Item label="Unidade de Envio" name="unidadeDeEnvio">
+          <Select
+            placeholder="Unidade de Envio"
+            onDropdownVisibleChange={handleLoadUnidadesDeMedida}
+            value={unidadeDeEnvioId}
+            onSelect={setUnidadeDeEnvioId}
+          >
+            {unidadesDeEnvioLoad.map((unidadeDeEnvio) => (
+              <Select.Option key={unidadeDeEnvio.id} value={unidadeDeEnvio.id}>
+                {unidadeDeEnvio.unidadeDeEnvio}
+              </Select.Option>
+            ))}
+          </Select>
+          <br />
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
+            <NovaUnidadeDeEnvioModal typeButton="dashed" />
+          </div>
+        </Form.Item>
+      </Col>
+    </Row>
+
+    {/* Botão Criar */}
+    <Row>
+      <Col span={24} style={{ textAlign: "right" }}>
+        <Button type="primary" htmlType="submit">
+          Criar
+        </Button>
+      </Col>
+    </Row>
+  </Form>
   );
 };
 

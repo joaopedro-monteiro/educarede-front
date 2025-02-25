@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Row, Select, Space } from "antd";
+import { MinusCircleOutlined, PlusOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { Button, Col, Form, Input, Row, Select, Space, Tooltip } from "antd";
 import { ProdutoService } from "../../Produto/service/produto-service";
 import { Produto } from "../../Produto/entity/produto";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,9 @@ const GuiaDeRemessaPage: React.FC = () => {
     [key: number]: string;
   }>({});
 
-  const {user} = useContext(AuthContext);
+  const[observacaoUnidadeDeEnvio, setObservacaoUnidadeDeEnvio] = useState<{[key:number]:string}>({});
+
+  const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -40,7 +42,7 @@ const GuiaDeRemessaPage: React.FC = () => {
     var guiaDeRemessa = new GuiaDeRemessa();
     guiaDeRemessa.unidadeEscolar = user?.nomeDaEscola;
     guiaDeRemessa.idUsuario = user?.id;
-    
+
     guiaDeRemessa.Itens = guiaDeRemessaItens;
 
     const guiaDeRemessaService = new GuiaDeRemessaService();
@@ -74,6 +76,10 @@ const GuiaDeRemessaPage: React.FC = () => {
         ...prev,
         [index]: unidadeDeEnvioSelected.unidadeDeEnvio || "",
       }));
+      setObservacaoUnidadeDeEnvio((prev) => ({
+        ...prev,
+        [index]: unidadeDeEnvioSelected.observacao || "",
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -94,74 +100,80 @@ const GuiaDeRemessaPage: React.FC = () => {
   }, []);
 
   return (
-    <Row>
-      <Col span={24}>
-        <h1 style={{ textAlign: "center", marginTop:"auto" }}>Adicionar Material</h1>
+    <Row justify="center" style={{ marginTop: "20px" }}>
+      <Col xs={24} sm={22} md={20} lg={18} xl={16}>
+        <h1 style={{ textAlign: "center", marginBottom: "24px" }}>
+          Adicionar Material
+        </h1>
         <Form
           name="dynamic_form_nest_item"
           onFinish={onFinish}
-          style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}
           autoComplete="off"
+          style={{ maxWidth: "800px", margin: "0 auto" }}
         >
           <Form.List name="itens">
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, ...restField }, index) => (
-                  <Space
-                    key={key}
-                    style={{
-                      display: "flex",
-                      marginBottom: 8,
-                      alignItems: "center",
-                    }}
-                    align="baseline"
-                  >
-                    <Form.Item
-                      {...restField}
-                      name={[name, "produtoId"]}
-                      rules={[
-                        { required: true, message: "Preencha o material..." },
-                      ]}
-                    >
-                      <Select
-                        placeholder="Material"
-                        style={{ width: 200 }}
-                        onChange={(value) => handleUnidadeDeEnvio(value, index)}
+                  <Row key={key} gutter={[16, 16]} justify="center" align="middle">
+                    <Col xs={24} sm={13} md={12} lg={12} xl={12}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "produtoId"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Preencha o material...",
+                          },
+                        ]}
                       >
-                        {produtos.map((produto) => (
-                          <Select.Option key={produto.id} value={produto.id}>
-                            {produto.nome}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "quantidade"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Preencha a quantidade...",
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder="Quantidade"
-                        addonAfter={unidadeDeEnvio[index]}
-                        type="number"
+                        <Select
+                          placeholder="Material"
+                          onChange={(value) =>
+                            handleUnidadeDeEnvio(value, index)
+                          }
+                          style={{ width: "100%" }}
+                        >
+                          {produtos.map((produto) => (
+                            <Select.Option key={produto.id} value={produto.id}>
+                              {produto.nome}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={12} md={11} lg={11} xl={11}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "quantidade"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Preencha a quantidade...",
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="Quantidade"
+                          addonAfter={unidadeDeEnvio[index] ? <span>{unidadeDeEnvio[index]} | <Tooltip title={observacaoUnidadeDeEnvio[index]}><InfoCircleOutlined style={{color:"blue"}} /></Tooltip></span> : ""}
+                          type="number"
+                          style={{ width: "100%" }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={1} sm={1} md={1} lg={1} xl={1}>
+                      <MinusCircleOutlined
+                        onClick={() => remove(name)}
+                        style={{
+                          fontSize: "16px",
+                          color: "red",
+                          cursor: "pointer",
+                          marginBottom: "25px",
+                          alignSelf: "center",
+                        }}
                       />
-                    </Form.Item>
-                    <MinusCircleOutlined
-                      onClick={() => remove(name)}
-                      style={{
-                        fontSize: "16px",
-                        color: "red",
-                        cursor: "pointer",
-                        marginBottom: "25px",
-                        alignSelf: "center",
-                      }}
-                    />
-                  </Space>
+                    </Col>
+                  </Row>
                 ))}
                 <Form.Item>
                   <Button
@@ -169,7 +181,6 @@ const GuiaDeRemessaPage: React.FC = () => {
                     onClick={() => add()}
                     icon={<PlusOutlined />}
                     block
-                    style={{ width: "25vw" }}
                   >
                     Adicionar item
                   </Button>
@@ -178,7 +189,7 @@ const GuiaDeRemessaPage: React.FC = () => {
             )}
           </Form.List>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" block>
               Enviar pedido
             </Button>
           </Form.Item>

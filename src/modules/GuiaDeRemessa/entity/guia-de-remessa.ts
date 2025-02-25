@@ -6,5 +6,8 @@ export class GuiaDeRemessa {
     public unidadeEscolar?: string;
     public dataDaEmissao: Date = new Date();
     public dataDaEntrega: Date = new Date();
+    public recusado: boolean = false;
+    public motivoRecusa?: string;
+    public dataRecusa?: Date;
     public Itens: GuiaDeRemessaItem[] = [];
 }

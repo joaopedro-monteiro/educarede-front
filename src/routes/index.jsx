@@ -14,7 +14,8 @@ import Usuarios from "../modules/Usuarios/components/usuarios";
 export default function RoutesApp() {
     return (
         <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<Private><Navbar tituloDaPagina="Guia de Remessa"><GuiaDeRemessa /></Navbar></Private>} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/guia-de-remessa" element={<Private><Navbar tituloDaPagina="Guia de Remessa"><GuiaDeRemessa /></Navbar></Private>} />
             <Route path="produtos" element={<Private><Navbar tituloDaPagina="Produtos"><Produtos /></Navbar></Private>} />
             <Route path="/novo-produto" element={<Private><Navbar tituloDaPagina="Produto"><NovoProduto /></Navbar></Private>} />

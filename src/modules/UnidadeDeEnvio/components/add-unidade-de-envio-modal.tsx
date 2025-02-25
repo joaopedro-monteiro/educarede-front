@@ -50,7 +50,7 @@ const NovaUnidadeDeEnvioModal: React.FC<NovaUnidadeDeEnvioModalProps> = ({typeBu
 
   return (
     <>
-      <Button type={typeButton} onClick={showModal} style={{ marginTop: "10px" }}>
+      <Button type={typeButton} onClick={showModal}>
         Adicionar Unidade de Envio
       </Button>
       <Modal

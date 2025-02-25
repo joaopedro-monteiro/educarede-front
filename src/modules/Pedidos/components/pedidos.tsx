@@ -1,49 +1,40 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Col, Input, Row, Table, Tag, Tooltip } from "antd";
 import { Button, TableColumnsType, TableProps } from "antd";
 import { GuiaDeRemessa } from "../../GuiaDeRemessa/entity/guia-de-remessa";
 import { GuiaDeRemessaService } from "../../GuiaDeRemessa/service/guia-de-remessa-service";
 import moment from "moment";
-import 'moment/locale/pt-br';
+import "moment/locale/pt-br";
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
 import { downloadPdf } from "../utils/download-guia-de-remessa-pdf-util";
 import { usePedidos } from "../hooks/use-pedidos";
 import { AuthContext } from "../../../infrastructure/context/auth";
+import DataDeEntregaPedidosComponent from "./data-de-entrega-component";
+import ExcluirPedidoModal from "./excluir-pedido-modal";
 
-interface DataType {
+export interface PedidosInterface {
   key?: string;
   unidadeEscolar?: string;
   dataDaEmissao?: Date;
   dataDaEntrega?: Date;
+  idUsuario?: string;
+  recusado?: boolean;
+  dataRecusa?: Date;
+  motivoRecusa?: string;
 }
 
 const PedidosPage: React.FC = () => {
   const navigate = useNavigate();
-  const { pedidos } = usePedidos();
+  const { pedidos, refreshFornecedores } = usePedidos();
   const [pedidosSerched, setPedidosSerched] = useState<string>("");
   const { user } = useContext(AuthContext);
 
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<PedidosInterface> = [
     {
       title: "Unidade Escolar",
       dataIndex: "unidadeEscolar",
       showSorterTooltip: { target: "full-header" },
-      // filters: [
-      //   {
-      //     text: 'Joe',
-      //     value: 'Joe',
-      //   },
-      //   {
-      //     text: 'Jim',
-      //     value: 'Jim',
-      //   },
-      // ],
-      // // specify the condition of filtering result
-      // // here is that finding the name started with `value`
-      // onFilter: (value, record) => record.name.indexOf(value as string) === 0,
-      // sorter: (a, b) => a.name.length - b.name.length,
-      // sortDirections: ['descend'],
     },
     {
       title: "Data de Emissão",
@@ -57,42 +48,38 @@ const PedidosPage: React.FC = () => {
     {
       title: "Data de Entrega",
       dataIndex: "dataDaEntrega",
-      render: (dataDaEntrega) => {
-        return dataDaEntrega ? (
-          moment(dataDaEntrega).format("DD/MM/YYYY")
-        ) : (
-          <Tag color="red">Não entregue</Tag>
-        );
-      },
+      render: (_, record) => <DataDeEntregaPedidosComponent pedido={record} />,
     },
     {
       title: "Ações",
       width: "10%",
       dataIndex: "acoes",
-      render: (_, record) =>
-        record.key ? (
-          <div style={{ display: "flex", gap: 5 }}>
-            <Tooltip title="Visualizar">
-              <Button onClick={() => handleRedirect(record.key!)}>
-                <SearchOutlined />
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: 5 }}>
+          <Tooltip title="Visualizar">
+            <Button onClick={() => handleRedirect(record.key!)}>
+              <SearchOutlined />
+            </Button>
+          </Tooltip>
+          {user?.role === "Gestor" ? (
+            <Tooltip title="Baixar Guia de Remessa">
+              <Button
+                type="primary"
+                onClick={() =>
+                  downloadPdf(record.key!, record as GuiaDeRemessa)
+                }
+              >
+                <DownloadOutlined />
               </Button>
             </Tooltip>
-            {
-              user.role === "Gestor" ? (
-                <Tooltip title="Baixar Guia de Remessa">
-                  <Button
-                    type="primary"
-                    onClick={() =>
-                      downloadPdf(record.key!, record as GuiaDeRemessa)
-                    }
-                  >
-                    <DownloadOutlined />
-                  </Button>
-                </Tooltip>
-              ) : null
-            }
-          </div>
-        ) : null,
+          ) : null}
+          {
+            (record.idUsuario == user?.id && record.dataDaEntrega == null && record.recusado == false) ? (
+              <ExcluirPedidoModal id={record.key!} dataDaEmissao={record.dataDaEmissao!} unidadeEscolar={record.unidadeEscolar!} onSaved={refreshFornecedores}/>
+            ) : null
+          }
+        </div>
+      ),
     },
   ];
 
@@ -111,10 +98,14 @@ const PedidosPage: React.FC = () => {
       unidadeEscolar: pedido.unidadeEscolar,
       dataDaEmissao: pedido.dataDaEmissao,
       dataDaEntrega: pedido.dataDaEntrega,
+      idUsuario: pedido.idUsuario,
+      recusado: pedido.recusado,
+      dataRecusa: pedido.dataRecusa,
+      motivoRecusa: pedido.motivoRecusa,
     };
   });
 
-  const onChange: TableProps<DataType>["onChange"] = (
+  const onChange: TableProps<PedidosInterface>["onChange"] = (
     pagination,
     filters,
     sorter,
@@ -139,7 +130,7 @@ const PedidosPage: React.FC = () => {
         </Col>
       </Row>
 
-      <Table<DataType>
+      <Table<PedidosInterface>
         columns={columns}
         dataSource={data}
         onChange={onChange}

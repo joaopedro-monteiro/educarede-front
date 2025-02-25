@@ -4,11 +4,16 @@ import { IBaseService } from "../../../infrastructure/services/base-service";
 import { environment } from "../../../environments/environment";
 import { DataDaEntrega } from "../../Pedidos/command/data-da-entrega";
 
+const instance = axios.create({
+  baseURL: environment.apiUrl,
+  withCredentials: true,
+});
+
 export class GuiaDeRemessaService {
   async getAll(role: string, id: string): Promise<GuiaDeRemessa[]> {
     try {
-      const response = await axios.get(
-        `${environment.apiUrl}/guias-de-remessa`,
+      const response = await instance.get(
+        `guias-de-remessa`,
         {
           params: {
             role: role,
@@ -23,7 +28,7 @@ export class GuiaDeRemessaService {
     }
   }
   async getById(id: string): Promise<GuiaDeRemessa> {
-    const response = axios.get(`${environment.apiUrl}/guias-de-remessa/${id}`);
+    const response = instance.get(`guias-de-remessa/${id}`);
     return response
       .then((res) => res.data)
       .catch((error) => {
@@ -31,8 +36,8 @@ export class GuiaDeRemessaService {
       });
   }
   async create(entity: GuiaDeRemessa): Promise<GuiaDeRemessa> {
-    const response = axios.post(
-      `${environment.apiUrl}/guias-de-remessa`,
+    const response = instance.post(
+      `guias-de-remessa`,
       entity
     );
     return response
@@ -42,8 +47,8 @@ export class GuiaDeRemessaService {
       });
   }
   async update(entity: GuiaDeRemessa): Promise<GuiaDeRemessa> {
-    const response = axios.put(
-      `${environment.apiUrl}/guias-de-remessa/${entity.id}`,
+    const response = instance.put(
+      `guias-de-remessa/${entity.id}`,
       entity
     );
     return response
@@ -53,8 +58,8 @@ export class GuiaDeRemessaService {
       });
   }
   async delete(id: string): Promise<void> {
-    const response = axios.delete(
-      `${environment.apiUrl}/guias-de-remessa/${id}`
+    const response = instance.delete(
+      `guias-de-remessa/${id}`
     );
     return response
       .then((res) => res.data)
@@ -63,8 +68,8 @@ export class GuiaDeRemessaService {
       });
   }
   async alterarDataDaEntrega(entity: DataDaEntrega): Promise<DataDaEntrega> {
-    const response = axios.put(
-      `${environment.apiUrl}/guias-de-remessa/data-da-entrega`,
+    const response = instance.put(
+      `guias-de-remessa/data-da-entrega`,
       entity
     );
     return response
@@ -72,5 +77,14 @@ export class GuiaDeRemessaService {
       .catch((error) => {
         throw new Error(error);
       });
+  }
+
+  async recusarPedido(id: string, motivoRecusa: string): Promise<void> {
+    const response = await instance.put(`guias-de-remessa/${id}/recusar-pedido`, null, {
+      params: {
+        motivoRecusa: motivoRecusa,
+      },
+    });
+    return response.data;
   }
 }

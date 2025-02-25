@@ -161,8 +161,7 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
     <>
       {sending && toast.info("Enviando arquivo para o servidor...")}
       <Button
-        style={{
-          marginLeft: "5px",
+        style={{          
           backgroundColor: "#21c16e",
           color: "white",
         }}

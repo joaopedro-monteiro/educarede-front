@@ -56,7 +56,7 @@ const NovoFornecedorModal: React.FC<AdicionarFornecedorModalProps> = ({typeButto
 
   return (
     <>
-      <Button type={typeButton} onClick={showModal} style={{ marginTop: "10px" }}>
+      <Button type={typeButton} onClick={showModal}>
         Adicionar Fornecedor
       </Button>
       <Modal
