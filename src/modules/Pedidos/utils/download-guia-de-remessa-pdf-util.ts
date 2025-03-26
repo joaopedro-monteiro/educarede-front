@@ -4,15 +4,7 @@ import { GuiaDeRemessaItemService } from "../../GuiaDeRemessaItem/service/guia-d
 import { toast } from "react-toastify";
 
   export const downloadPdf = async (guiaDeRemessaId: string, guiaDeRemessa: GuiaDeRemessa) => {
-    handleDownloadPdf(guiaDeRemessaId!, guiaDeRemessa!)
-      .then(() => {
-        console.log("PDF baixado com sucesso");
-        toast.success("PDF baixado com sucesso");
-      })
-      .catch((error) => {
-        console.error("Erro ao baixar o PDF:", error);
-        toast.error("Erro ao baixar o PDF");
-      });
+    handleDownloadPdf(guiaDeRemessaId!, guiaDeRemessa!);      
   }
 
   const handleDownloadPdf = async (
@@ -29,8 +21,9 @@ import { toast } from "react-toastify";
           guiaDeRemessa?.dataDaEmissao
         ).format("DD/MM/YYYY hh:mm")}.pdf`
       );
+      toast.success("PDF baixado com sucesso!");
     } catch (error) {
-      alert("Erro ao baixar o PDF");
+      toast.error("Erro ao baixar PDF.");
     }
   };
 

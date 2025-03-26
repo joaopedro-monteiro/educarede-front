@@ -27,8 +27,8 @@ function CabecalhoGerenciarPedidos({
     guiaDeRemessaId!
   );
 
-  if(!guiaDeRemessa){
-    return <Spin fullscreen={true}/>
+  if (!guiaDeRemessa) {
+    return <Spin fullscreen={true} />
   }
 
   let mensagem;
@@ -55,7 +55,7 @@ function CabecalhoGerenciarPedidos({
         | Motivo: <strong>{guiaDeRemessa.motivoRecusa}</strong>
       </p>
     );
-  } else if(userRole === "Gestor"){
+  } else if (userRole === "Gestor") {
     mensagem = (
       <>
         <div style={{ gap: "10px", display: "flex" }}>
@@ -65,7 +65,7 @@ function CabecalhoGerenciarPedidos({
             icon={<DownloadOutlined />}
           >
             <strong>Guia de Remessa</strong>
-          </Button>        
+          </Button>
           <RecusarPedidoModal guiaDeRemessaId={guiaDeRemessa?.id} />
           <FinalizarPedidoModal
             id={guiaDeRemessaId}

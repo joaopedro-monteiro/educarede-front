@@ -79,10 +79,11 @@ export class GuiaDeRemessaService {
       });
   }
 
-  async recusarPedido(id: string, motivoRecusa: string): Promise<void> {
+  async recusarPedido(id: string, motivoRecusa: string, linkPedido: string): Promise<void> {
     const response = await instance.put(`guias-de-remessa/${id}/recusar-pedido`, null, {
       params: {
         motivoRecusa: motivoRecusa,
+        linkPedido: linkPedido
       },
     });
     return response.data;

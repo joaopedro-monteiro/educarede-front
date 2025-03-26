@@ -8,6 +8,7 @@ import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import moment from "moment";
 import { GuiaDeRemessaService } from "../../GuiaDeRemessa/service/guia-de-remessa-service";
 import { ProdutoService } from "../../Produto/service/produto-service";
+import { useGerenciarPedidos } from "../hooks/use-gerenciar-pedidos";
 
 interface FinalizarPedidoModalProps {
   id?: string;
@@ -43,13 +44,13 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
 
     fileList: pdfFile
       ? [
-          {
-            uid: "-1",
-            name: pdfFile.name,
-            status: "done",
-            url: URL.createObjectURL(pdfFile),
-          },
-        ]
+        {
+          uid: "-1",
+          name: pdfFile.name,
+          status: "done",
+          url: URL.createObjectURL(pdfFile),
+        },
+      ]
       : [],
   };
 
@@ -58,21 +59,21 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
       message.error("Por favor, selecione um arquivo PDF para finalizar.");
       return;
     }
-
     try {
-      const storageRef = ref(storage, `guia-de-remessa/${pdfFile.name}`);
-
-      const snapshot = await uploadBytes(storageRef, pdfFile);
-      console.log("Uploaded a blob or file!", snapshot);
-
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      console.log("Arquivo disponível em: ", downloadURL);
-
-      handleRecordInDatabase(downloadURL);
-
-      setPdfFile(null);
       handleDataEntrega()
-        .then(() => {
+        .then(async () => {
+          const storageRef = ref(storage, `guia-de-remessa/${pdfFile.name}`);
+
+          const snapshot = await uploadBytes(storageRef, pdfFile);
+          console.log("Uploaded a blob or file!", snapshot);
+
+          const downloadURL = await getDownloadURL(snapshot.ref);
+          console.log("Arquivo disponível em: ", downloadURL);
+
+          handleRecordInDatabase(downloadURL);
+
+          setPdfFile(null);
+
           console.log("Data da entrega alterada com sucesso!");
           //toast.success("Data da entrega alterada com sucesso!");
           toast.success("Pedido finalizado com sucesso!");
@@ -107,22 +108,30 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
   };
 
   async function handleDataEntrega() {
+    console.log('Chegou aqui');
+    try{
+      const guiaDeRemessaFirebase = useGerenciarPedidos(id!);
+      console.log('guiaDeRemessaFirebase', guiaDeRemessaFirebase);
+    }catch(error){
+      console.error("Erro ao buscar guia de remessa:", error);      
+    }
     const guiaDeRemessaService = new GuiaDeRemessaService();
     const response = await guiaDeRemessaService.alterarDataDaEntrega({
       id: id,
       dataDaEntrega: new Date(dataDaEntrega!),
+      //linkGuiaDeRemessaStorage: guiaDeRemessaFirebase!.url,
     });
   }
 
   function atualizarEstoqueAposEnvio() {
     const produtoService = new ProdutoService();
     const fetchData = async () => {
-      try {        
+      try {
         await produtoService.atualizarEstoqueAposEnvio(id!)
-        .then(() => {
-          console.log("Estoque atualizado com sucesso!");
-          toast.success("Pedido finalizado com sucesso!");          
-        });
+          .then(() => {
+            console.log("Estoque atualizado com sucesso!");
+            toast.success("Pedido finalizado com sucesso!");
+          });
       } catch (error) {
         console.log(error);
       }
@@ -145,10 +154,10 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
       return;
     }
     handleUploadToFirebase()
-    .then(() => {
+      .then(() => {
         setSending(true);
         onSaved();
-    });
+      });
 
     atualizarEstoqueAposEnvio();
   };
@@ -161,7 +170,7 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
     <>
       {sending && toast.info("Enviando arquivo para o servidor...")}
       <Button
-        style={{          
+        style={{
           backgroundColor: "#21c16e",
           color: "white",
         }}

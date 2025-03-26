@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Button, Input, Modal } from "antd";
 import { GuiaDeRemessaService } from "../../GuiaDeRemessa/service/guia-de-remessa-service";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CloseCircleOutlined } from "@ant-design/icons";
 
 interface RecusarPedidoProps {
@@ -15,6 +15,7 @@ const RecusarPedidoModal: React.FC<RecusarPedidoProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [motivoRecusa, setMotivoRecusa] = useState("");
+  const location = useLocation();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -32,8 +33,9 @@ const RecusarPedidoModal: React.FC<RecusarPedidoProps> = ({
   const guiaDeRemessaService = useMemo(() => new GuiaDeRemessaService(), []);
 
   async function recusarPedido() {
+    const linkPedido =  window.location.origin + location.pathname;
     guiaDeRemessaService
-      .recusarPedido(guiaDeRemessaId!, motivoRecusa)
+      .recusarPedido(guiaDeRemessaId!, motivoRecusa, linkPedido)
       .then(() => {
         toast.success("Pedido recusado com sucesso!");
         navigate("/pedidos");
