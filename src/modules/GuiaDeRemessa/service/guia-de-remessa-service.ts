@@ -27,6 +27,7 @@ export class GuiaDeRemessaService {
       throw error;
     }
   }
+  
   async getById(id: string): Promise<GuiaDeRemessa> {
     const response = instance.get(`guias-de-remessa/${id}`);
     return response
@@ -35,7 +36,9 @@ export class GuiaDeRemessaService {
         throw new Error(error);
       });
   }
+
   async create(entity: GuiaDeRemessa): Promise<GuiaDeRemessa> {
+    debugger
     const response = instance.post(
       `guias-de-remessa`,
       entity
@@ -46,6 +49,7 @@ export class GuiaDeRemessaService {
         throw new Error(error);
       });
   }
+
   async update(entity: GuiaDeRemessa): Promise<GuiaDeRemessa> {
     const response = instance.put(
       `guias-de-remessa/${entity.id}`,
@@ -57,6 +61,7 @@ export class GuiaDeRemessaService {
         throw new Error(error);
       });
   }
+
   async delete(id: string): Promise<void> {
     const response = instance.delete(
       `guias-de-remessa/${id}`
@@ -67,6 +72,7 @@ export class GuiaDeRemessaService {
         throw new Error(error);
       });
   }
+
   async alterarDataDaEntrega(entity: DataDaEntrega): Promise<DataDaEntrega> {
     const response = instance.put(
       `guias-de-remessa/data-da-entrega`,

@@ -1,11 +1,13 @@
 import React, { useContext, useState } from "react";
 import {
+  CodepenCircleOutlined,
   DesktopOutlined,
   PieChartOutlined,
   ProductFilled,
   ShopFilled,
   UserAddOutlined,
-  UserOutlined
+  UserOutlined,
+  PlusCircleFilled
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Breadcrumb, Button, Layout, Menu, Tag, theme, Tooltip } from "antd";
@@ -39,20 +41,21 @@ const Navbar: React.FC<NavbarProps> = ({ children, tituloDaPagina }) => {
   const { user, logout } = useContext(AuthContext);
 
   const items: MenuItem[] = [
-
     getItem(
       <Link to="/guia-de-remessa">Guia de Remessa</Link>,
       "1",
       <PieChartOutlined />
-    ),    
+    ),
     getItem(<Link to="/pedidos">Pedidos</Link>, "2", <DesktopOutlined />),
   ];
 
-  if(user?.role === "Gestor") {
+  if (user?.role === "Gestor") {
     items.push(getItem(<Link to="/produtos">Produtos</Link>, "3", <ProductFilled />));
     items.push(getItem(<Link to="/fornecedores">Fornecedores</Link>, "4", <ShopFilled />));
-    items.push(getItem(<Link to="/unidades-de-envio">Unidades de Envio</Link>, "5", <DesktopOutlined />));   
-    items.push(getItem(<Link to="/usuarios">Usuários</Link>, "6", <UserOutlined />));    
+    items.push(getItem(<Link to="/unidades-de-envio">Unidades de Envio</Link>, "5", <DesktopOutlined />));
+    items.push(getItem(<Link to="/solicitacoes">Solicitação</Link>, "6", <PlusCircleFilled />));
+    items.push(getItem(<Link to="/patrimonio">Patrimônio</Link>, "7", <CodepenCircleOutlined />));
+    items.push(getItem(<Link to="/usuarios">Usuários</Link>, "8", <UserOutlined />));
   }
 
   const [collapsed, setCollapsed] = useState(false);

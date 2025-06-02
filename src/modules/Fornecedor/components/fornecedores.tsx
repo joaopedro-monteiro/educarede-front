@@ -103,7 +103,7 @@ const FornecedoresPage: React.FC = () => {
   return (
     <div>
       <Row justify="space-between" align="middle" style={{marginBottom: "10px"}}>
-        <Col span={20} style={{paddingBottom: "5px"}}>
+        <Col span={21} style={{paddingBottom: "5px"}}>
           <Input.Search
             placeholder="Pesquisar"
             enterButton

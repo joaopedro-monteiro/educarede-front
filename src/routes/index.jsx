@@ -10,6 +10,8 @@ import GerenciarPedidosPage from "../modules/Pedidos/components/gerenciar-pedido
 import LoginPage from "../modules/Login/components";
 import Private from "./private";
 import Usuarios from "../modules/Usuarios/components/usuarios";
+import Patrimonio from "../modules/Patrimonio/component/patrimonio";
+import SolicitacaoPage from "../modules/Solicitacoes/component/solicitacoes";
 
 export default function RoutesApp() {
     return (
@@ -24,6 +26,8 @@ export default function RoutesApp() {
             <Route path="pedidos" element={<Private><Navbar tituloDaPagina="Pedidos"><Pedidos /></Navbar></Private>} />
             <Route path="pedidos/gerenciar/:guiaDeRemessaId" element={<Private><Navbar tituloDaPagina="Gerenciar Pedido"><GerenciarPedidosPage /></Navbar></Private>} />            
             <Route path="usuarios" element={<Private><Navbar tituloDaPagina="Usuários"><Usuarios /></Navbar></Private>} />
+            <Route path="patrimonio" element={<Private><Navbar tituloDaPagina="Patrimônio"><Patrimonio /></Navbar></Private>} />
+            <Route path="solicitacoes" element={<Private><Navbar tituloDaPagina="Solicitações"><SolicitacaoPage /></Navbar></Private>} />
         </Routes>
     );
 }

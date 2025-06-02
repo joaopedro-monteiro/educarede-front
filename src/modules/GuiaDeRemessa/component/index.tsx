@@ -23,12 +23,12 @@ const GuiaDeRemessaPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: any) => {    
     if (!values.itens || values.itens.length === 0) {
       toast.error("Adicione pelo menos um item antes de enviar o pedido!");
       return;
     }
-
+    debugger
     const serviceProduto = new ProdutoService();
     var guiaDeRemessaItens = new Array<GuiaDeRemessaItem>();
     for (const item of values.itens) {
@@ -38,7 +38,7 @@ const GuiaDeRemessaPage: React.FC = () => {
         produtoNome: (await serviceProduto.getById(item.produtoId)).nome,
       });
     }
-
+    debugger
     var guiaDeRemessa = new GuiaDeRemessa();
     guiaDeRemessa.unidadeEscolar = user?.nomeDaEscola;
     guiaDeRemessa.idUsuario = user?.id;

@@ -62,18 +62,6 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
     try {
       handleDataEntrega()
         .then(async () => {
-          const storageRef = ref(storage, `guia-de-remessa/${pdfFile.name}`);
-
-          const snapshot = await uploadBytes(storageRef, pdfFile);
-          console.log("Uploaded a blob or file!", snapshot);
-
-          const downloadURL = await getDownloadURL(snapshot.ref);
-          console.log("Arquivo disponível em: ", downloadURL);
-
-          handleRecordInDatabase(downloadURL);
-
-          setPdfFile(null);
-
           console.log("Data da entrega alterada com sucesso!");
           //toast.success("Data da entrega alterada com sucesso!");
           toast.success("Pedido finalizado com sucesso!");
@@ -109,18 +97,32 @@ const FinalizarPedidoModal: React.FC<FinalizarPedidoModalProps> = ({
 
   async function handleDataEntrega() {
     console.log('Chegou aqui');
-    try{
+    try {
+      const storageRef = ref(storage, `guia-de-remessa/${pdfFile?.name}`);
+
+      const snapshot = await uploadBytes(storageRef, pdfFile!);
+      console.log("Uploaded a blob or file!", snapshot);
+
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      console.log("Arquivo disponível em: ", downloadURL);
+
+      handleRecordInDatabase(downloadURL);
+
+      setPdfFile(null);
+
+      const guiaDeRemessaService = new GuiaDeRemessaService();
+      console.log("guia de remessa firebase:", guiaDeRemessaEnviada);
+      const response = await guiaDeRemessaService.alterarDataDaEntrega({
+        id: id,
+        dataDaEntrega: new Date(dataDaEntrega!),
+        linkGuiaDeRemessaStorage: downloadURL,
+      });
       const guiaDeRemessaFirebase = useGerenciarPedidos(id!);
       console.log('guiaDeRemessaFirebase', guiaDeRemessaFirebase);
-    }catch(error){
-      console.error("Erro ao buscar guia de remessa:", error);      
+    } catch (error) {
+      console.error("Erro ao buscar guia de remessa:", error);
     }
-    const guiaDeRemessaService = new GuiaDeRemessaService();
-    const response = await guiaDeRemessaService.alterarDataDaEntrega({
-      id: id,
-      dataDaEntrega: new Date(dataDaEntrega!),
-      //linkGuiaDeRemessaStorage: guiaDeRemessaFirebase!.url,
-    });
+
   }
 
   function atualizarEstoqueAposEnvio() {

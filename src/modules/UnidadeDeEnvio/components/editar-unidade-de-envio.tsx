@@ -90,7 +90,7 @@ const EditarUnidadeDeEnvioModal: React.FC<EditarUnidadeDeEnvioModalProps> = ({
               <Input
                 placeholder="Quantidade por Unidade"
                 value={quantidadePorUnidadeToPut}
-                onChange={(e) => setUnidadeDeEnvioToPut(e.target.value)}
+                onChange={(e) => setQuantidadePorUnidadeToPut(Number(e.target.value))}
               />
             </Row>
           </Form.Item>
