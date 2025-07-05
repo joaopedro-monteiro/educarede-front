@@ -9,6 +9,8 @@ import ExcluirProdutoModal from "./excluir-produto-modal";
 import AdicionarQuantidadeEmEstoqueModal from "./adicionar-estoque-modal";
 import ReduzirQuantidadeEmEstoqueModal from "./reduzir-estoque-modal";
 import { Link } from "react-router-dom";
+import { error } from "console";
+import { toast } from "react-toastify";
 
 interface DataType {
   key?: string;
@@ -125,7 +127,7 @@ const ProdutosPage: React.FC = () => {
 
   var produtosService = useMemo( () => new ProdutoService(), []);
 
-  var refreshProdutos = () => {
+  var refreshProdutos = () => {  
     produtosService.getAll().then((produtos) => {
       setProdutos(produtos);
       setFornecedores(
@@ -137,6 +139,8 @@ const ProdutosPage: React.FC = () => {
           )
           .map((fornecedor) => ({ text: fornecedor, value: fornecedor }))
       );
+    }).catch(error => {
+      toast.error('Não foi possível carregar os produtos disponíveis');
     });
   };
 

@@ -11,7 +11,7 @@ const instance = axios.create({
 
 export class ProdutoService implements IBaseService<Produto> {
     
-    async getAll(): Promise<Produto[]> {
+    async getAll(): Promise<Produto[]> {        
         const response = await instance.get(`/produtos`);
         return response.data;
     }

@@ -28,10 +28,10 @@ const SolicitacaoPage: React.FC = () => {
         {
             title: 'Nível de Prioridade',
             dataIndex: 'nivelPrioridade',
-            render: (nivelPrioridade: NivelPrioridade) => {                
+            render: (nivelPrioridade: NivelPrioridade) => {
                 var teste = nivelPrioridade;
-                return <Tag color={NivelPrioridadeCor[nivelPrioridade]}>{NivelPrioridadeDescricao[nivelPrioridade]}</Tag> 
-            }                                                          
+                return <Tag color={NivelPrioridadeCor[nivelPrioridade]}>{NivelPrioridadeDescricao[nivelPrioridade]}</Tag>
+            }
         },
         {
             title: 'Escola',
@@ -53,9 +53,17 @@ const SolicitacaoPage: React.FC = () => {
         {
             title: 'Ações',
             width: "10%",
-            dataIndex: "acoes",
-            render: (_, record) => (
-                <SolicitacoesItemModal />
+            render: (_, record) => (                
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <SolicitacoesItemModal 
+                    tipoSolicitacao={record.tipoSolicitacao!} 
+                    nivelPrioridade={record.nivelPrioridade!} 
+                    tituloSolicitacao={record.tituloSolicitacao!} 
+                    descricaoSolicitacao={record.descricao!}
+                    unidadeEscolar={record.unidadeEscolar!}
+                    dataEmissao={record.dataDaEmissao!}
+                    />
+                </div>
             ),
         }
     ];
@@ -66,6 +74,7 @@ const SolicitacaoPage: React.FC = () => {
 
     const data = solicitacaoFilter.map((solicitacao) => ({
         key: solicitacao.id,
+        id: solicitacao.id,
         tipoSolicitacao: solicitacao.tipoSolicitacao,
         nivelPrioridade: solicitacao.nivelPrioridade,
         tituloSolicitacao: solicitacao.tituloSolicitacao,
@@ -77,7 +86,8 @@ const SolicitacaoPage: React.FC = () => {
     var solicitacaoService = useMemo(() => new SolicitacaoService(), []);
 
     var refreshSolicitacao = () => {
-        solicitacaoService.getAll().then((solicitacao) => {            
+        solicitacaoService.getAll().then((solicitacao) => {
+            debugger
             setSolicitacao(solicitacao);
         })
             .catch((error) => {
@@ -98,7 +108,7 @@ const SolicitacaoPage: React.FC = () => {
                     />
                 </Col>
                 <Col style={{ paddingBottom: "5px" }}>
-                    <NovaSolicitacaoModal onSaved={refreshSolicitacao}/>
+                    <NovaSolicitacaoModal onSaved={refreshSolicitacao} />
                 </Col>
             </Row>
             <Table<Solicitacao>
